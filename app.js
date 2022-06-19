@@ -4,7 +4,7 @@ const search= document.querySelector('#search')
 const weather= document.querySelector('#weather')
 
 const getWeather= async (city)=>{
-  weather.innerHTML= `<h2>LoADinG</h2>`
+  weather.innerHTML= `<h2>LoadinG...</h2>`
   const url= `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KYE}&units=metric`
 
   const response= await fetch(url);
@@ -13,7 +13,7 @@ const getWeather= async (city)=>{
 }
 
 const showWeather= (data)=>{
-  if(data.cod=="404"){
+  if(data.cod =="404"){
     weather.innerHTML=`<h2>City Not Found</h2>`
     return;
   }
@@ -28,9 +28,24 @@ const showWeather= (data)=>{
 
 }
 
-form.addEventListener('submit',function(event){
+form.addEventListener("submit",function(event){
   getWeather(search.value)
-  // event.preventDefault();
+  event.preventDefault();
 })
 
+const findMyLocation= ()=>{
+  const status= document.querySelector(".status")
+  const success=(position)=>{
+    const lattitude= position.coords.lattitude;
+    const longitude= position.coords.longitude;
+    const geoApiUrl=`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+    fetch(geoApiUrl).then(res=>res.json()).then(data=>{ status.textContent=data.principalSubdivision})
+  }
+   const error= ()=>{
+    status.textContent='Unable to retrieve your location'
+  }
+  navigator.geolocation.getCurrentPosition(success,error);
+}
+
+form.addEventListener("submit",findMyLocation)
 
